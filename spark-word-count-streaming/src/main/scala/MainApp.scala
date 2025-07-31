@@ -8,7 +8,7 @@ import org.apache.spark.sql.types.{StringType, StructField, StructType}
 object MainApp {
 
   def main(args: Array[String]): Unit = {
-    val kafkaBroker = "kafka-broker:9092"
+    val kafkaBroker = "kafka-broker:9092" 
     val definitionTopic = "definitions"
     val wordCountTopic = "word-count-results"
 
@@ -16,7 +16,7 @@ object MainApp {
       .appName(s"SparkWordCountStreaming")
       .getOrCreate()
 
-    spark.sparkContext.setLogLevel("ERROR")
+    spark.sparkContext.setLogLevel("WARN")
 
     // defining input stream data type (word, definition, response_topic)
     val definitionSchema = new StructType()
@@ -29,8 +29,7 @@ object MainApp {
       .format("kafka")
       .option("kafka.bootstrap.servers", kafkaBroker)
       .option("subscribe", definitionTopic)
-      .option("startingOffsets", "earliest")
-      .option("failOnDataLoss", "false")
+      .option("encoding", "UTF-8")
       .load()
 
     inputStream.printSchema() // debug purpose
@@ -83,11 +82,22 @@ object MainApp {
     // e.g. remove stop words, apply stemming, etc.
     // remove stop words
     val stopWords = Set(word, "so", "a", "an", "the", "is", "are", "am", "and", "or", "not", "for", "to", "in", "on", "at", "by", "with", "as", "of", "from", "that", "this", "these", "those", "there", "here", "where", "when", "how", "why", "what", "which", "who", "whom", "whose", "whom", "whomsoever", "whosoever", "whosever", "whosesoever")
-    val cleanedWords = result.filterKeys(!stopWords.contains(_))
+    
+    def stem(word: String): String = {
+      if (word.endsWith("ing") && word.length > 5) word.dropRight(3)
+      else if (word.endsWith("ed") && word.length > 4) word.dropRight(2)
+      else if (word.endsWith("er") && word.length > 4) word.dropRight(2)
+      else if (word.endsWith("ly") && word.length > 4) word.dropRight(2)
+      else if (word.endsWith("s") && word.length > 3) word.dropRight(1)
+      else word
+    }
 
-    // apply stemming
-
-    // you can apply other transformation here as per your inspiration
+    val cleanedWords = result
+      .filterKeys(!stopWords.contains(_)) // remove stopwords
+      .map { case (k, v) => (stem(k), v) } // Apply stem to the key and keep the value
+      .groupBy(_._1) // Group by the stemmed word (the key)
+      .mapValues(_.map(_._2).sum) // Sum the counts for each stemmed word
+      .filter(_._2 > 1) // only words appearing more than once
 
     cleanedWords
   }
