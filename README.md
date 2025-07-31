@@ -16,12 +16,17 @@ A real-time data processing pipeline that fetches word definitions and analyzes 
    pip install -r requirements.txt
    ```
 
-2. Start Kafka (use provided scripts)
+2. Start Kafka 
+   ```
+   ./kafka-start.sh
+   ```
 
 3. Start Spark application:
    ```
    cd spark-word-count-streaming
-   ./spark-submit-job.sh
+   ./sbt package
+   ./spark-env.sh
+   ./run-app.sh
    ```
 
 4. Start web interface:
