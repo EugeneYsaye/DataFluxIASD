@@ -34,17 +34,12 @@ A complete real-time analytics pipeline for detecting fraudulent payment transac
    python producer.py
    ```
 
-2. **Set up the kafka connection**:
-   ```bash
-   python setup-kafka.py
-   ```
-
-3. **Start the fraud detection pipeline**:
+2. **Start the fraud detection**:
    ```bash
    python fraud_detector.py
    ```
 
-4. **Start the dashboard**:
+3. **Start the dashboard**:
    ```bash
    python dashboard.py
    ```
@@ -70,3 +65,8 @@ A complete real-time analytics pipeline for detecting fraudulent payment transac
   "method": "credit_card"
 }
 ```
+
+## Sample Output
+
+Samput outputs are available in `./fraud_output/`.
+There are also screenshots in the screenshots folder.
