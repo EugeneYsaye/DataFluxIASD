@@ -50,7 +50,7 @@ A complete real-time analytics pipeline for detecting fraudulent payment transac
 - **Console**: Real-time fraud alerts
 - **Parquet files**: Stored in `./fraud_output/`
 - **Kafka topic**: `fraud-alerts` for downstream consumers
-- **Dashboard**: Web UI at http://localhost:5000
+- **Dashboard**: Web UI at http://localhost:9001
 
 ## Sample Transaction
 
