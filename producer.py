@@ -28,7 +28,7 @@ def main():
             producer.produce('transactions', json.dumps(transaction))
             producer.poll(0)
             print(f"Sent: {transaction['transaction_id']} - ${transaction['amount']}")
-            time.sleep(random.uniform(2, 5))
+            time.sleep(random.uniform(.2, .5))
     except KeyboardInterrupt:
         print("\nStopping producer...")
     finally:
