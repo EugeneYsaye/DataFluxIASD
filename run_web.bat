@@ -1,3 +1,0 @@
-@echo off
-echo Starting DataFlux Web Interface...
-python app.py

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fraud Detection Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .alert { border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .high_value { background-color: #ffebee; }
+        .header { background-color: #f5f5f5; padding: 20px; text-align: center; }
+        .stats { display: flex; justify-content: space-around; margin: 20px 0; }
+        .stat-box { background: #e3f2fd; padding: 15px; border-radius: 5px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Real-Time Fraud Detection Dashboard</h1>
+        <p>Monitoring suspicious transaction patterns</p>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-box">
+            <h3 id="total-alerts">0</h3>
+            <p>Total Alerts</p>
+        </div>
+        <div class="stat-box">
+            <h3 id="high-value-count">0</h3>
+            <p>High Value</p>
+        </div>
+    </div>
+    
+    <div id="alerts-container">
+        <h2>Recent Fraud Alerts</h2>
+        <div id="alerts-list"></div>
+    </div>
+
+    <script>
+        function updateDashboard() {
+            fetch('/api/alerts')
+                .then(response => response.json())
+                .then(alerts => {
+                    document.getElementById('total-alerts').textContent = alerts.length;
+                    
+                    const highValueCount = alerts.filter(a => a.fraud_type === 'high_value').length;
+                    document.getElementById('high-value-count').textContent = highValueCount;
+                    
+                    const alertsList = document.getElementById('alerts-list');
+                    alertsList.innerHTML = '';
+                    
+                    alerts.forEach(alert => {
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = `alert ${alert.fraud_type}`;
+                        alertDiv.innerHTML = `
+                            <strong>Alert:</strong> ${alert.fraud_type}<br>
+                            <strong>Transaction:</strong> ${alert.transaction_id}<br>
+                            <strong>User:</strong> ${alert.user_id}<br>
+                            <strong>Amount:</strong> $${alert.amount} ${alert.currency}<br>
+                            <strong>Location:</strong> ${alert.location}<br>
+                            <strong>Reason:</strong> ${alert.reason}<br>
+                            <strong>Time:</strong> ${alert.received_at}
+                        `;
+                        alertsList.appendChild(alertDiv);
+                    });
+                });
+        }
+        
+        // Update every 2 seconds
+        setInterval(updateDashboard, 2000);
+        updateDashboard(); // Initial load
+    </script>
+</body>
+</html>
